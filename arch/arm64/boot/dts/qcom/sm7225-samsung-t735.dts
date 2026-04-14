@@ -13,12 +13,28 @@
 	model = "Samsung Galaxy Tab S7 FE";
 	compatible = "samsung,t735", "qcom,sm7225";
 
+	/* 1. Added battery dump */
+	qcom,msm-id = <0x1b2 0x10000 0x1cb 0x10000>;
+	qcom,board-id = <0x08 0x05>;
+
 	aliases {
 		serial0 = &uart9;
 	};
 
+	/* 2. Added Reserved Memory to protect the display buffer */
+	reserved-memory {
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
+		cont_splash_mem: cont-splash@a0000000 {
+			reg = <0x0 0xa0000000 0x0 0x2300000>;
+			no-map;
+		};
+	};
+
 	chosen {
-		/* Modified: Now the kernel prints logs to the screen */
+		/* 3. Set output to screen (framebuffer) per pem120's advice */
 		stdout-path = "framebuffer0";
 
 		#address-cells = <2>;
@@ -27,11 +43,13 @@
 
 		framebuffer0: framebuffer@a0000000 {
 			compatible = "simple-framebuffer";
-			reg = <0x0 0xa0000000 0x00 0x2300000>;
+			reg = <0x0 0xa0000000 0x0 0x2300000>;
 			width = <2560>;
 			height = <1600>;
 			stride = <10240>;
 			format = "x8r8g8b8";
+			/* Link to the reserved memory node above */
+			memory-region = <&cont_splash_mem>;
 		};
 	};
 };
@@ -40,7 +58,7 @@
 	status = "okay";
 };
 
-/* Keep your regulators for later */
+/* Regulator config for the display rails */
 &dsi0 {
 	vddio-supply = <&vreg_l11a_1p8>;
 	vdd-supply = <&vreg_l10a_3p0>;
