@@ -13,7 +13,7 @@
 	model = "Samsung Galaxy Tab S7 FE";
 	compatible = "samsung,t735", "qcom,sm7225";
 
-	/* 1. Added battery dump */
+	/* IDs from your vendor dump to ensure bootloader handshake */
 	qcom,msm-id = <0x1b2 0x10000 0x1cb 0x10000>;
 	qcom,board-id = <0x08 0x05>;
 
@@ -21,7 +21,7 @@
 		serial0 = &uart9;
 	};
 
-	/* 2. Added Reserved Memory to protect the display buffer */
+	/* Reserved Memory protects the display region from being overwritten */
 	reserved-memory {
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -34,7 +34,7 @@
 	};
 
 	chosen {
-		/* 3. Set output to screen (framebuffer) per pem120's advice */
+		/* Redirects kernel logs to the tablet screen */
 		stdout-path = "framebuffer0";
 
 		#address-cells = <2>;
@@ -48,7 +48,6 @@
 			height = <1600>;
 			stride = <10240>;
 			format = "x8r8g8b8";
-			/* Link to the reserved memory node above */
 			memory-region = <&cont_splash_mem>;
 		};
 	};
@@ -58,7 +57,7 @@
 	status = "okay";
 };
 
-/* Regulator config for the display rails */
+/* Display power rails setup */
 &dsi0 {
 	vddio-supply = <&vreg_l11a_1p8>;
 	vdd-supply = <&vreg_l10a_3p0>;
