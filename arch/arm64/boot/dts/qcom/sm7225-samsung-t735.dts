@@ -20,6 +20,10 @@
 	chosen {
 		stdout-path = "serial0:115200n8";
 
+		#address-cells = <2>;
+		#size-cells = <2>;
+		ranges;
+
 		framebuffer0: framebuffer@a0000000 {
 			compatible = "simple-framebuffer";
 			reg = <0x0 0xa0000000 0x0 0x2300000>;
@@ -35,6 +39,11 @@
 	status = "okay";
 };
 
+/* * NEXT STEPS:
+ * 1. Define regulators (power)
+ * 2. Add the FT8203 display panel node
+ * 3. Configure touch and keys
+ */
 &dsi0 {
 	vddio-supply = <&vreg_l11a_1p8>;
 	vdd-supply = <&vreg_l10a_3p0>;
