@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 /*
- * Copyright (c) 2026, Rakan Badawood <rakzn>
+ * Copyright (c) 2026, Rakan Badawood <rakzn> 
  */
 
 /dts-v1/;
@@ -18,7 +18,8 @@
 	};
 
 	chosen {
-		stdout-path = "serial0:115200n8";
+		/* Modified: Now the kernel prints logs to the screen */
+		stdout-path = "framebuffer0";
 
 		#address-cells = <2>;
 		#size-cells = <2>;
@@ -26,7 +27,7 @@
 
 		framebuffer0: framebuffer@a0000000 {
 			compatible = "simple-framebuffer";
-			reg = <0x0 0xa0000000 0x0 0x2300000>;
+			reg = <0x0 0xa0000000 0x00 0x2300000>;
 			width = <2560>;
 			height = <1600>;
 			stride = <10240>;
@@ -39,11 +40,7 @@
 	status = "okay";
 };
 
-/* * NEXT STEPS:
- * 1. Define regulators (power)
- * 2. Add the FT8203 display panel node
- * 3. Configure touch and keys
- */
+/* Keep your regulators for later */
 &dsi0 {
 	vddio-supply = <&vreg_l11a_1p8>;
 	vdd-supply = <&vreg_l10a_3p0>;
