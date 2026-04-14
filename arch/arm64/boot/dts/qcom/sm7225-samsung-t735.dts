@@ -31,3 +31,17 @@
  * 2. Add the FT8203 display panel node
  * 3. Configure touch and keys
  */
+&dsi0 {
+	vddio-supply = <&vreg_l11a_1p8>;
+	vdd-supply = <&vreg_l10a_3p0>;
+};
+
+&vreg_l11a_1p8 {
+	regulator-min-microvolt = <1800000>;
+	regulator-max-microvolt = <1800000>;
+};
+
+&vreg_l10a_3p0 {
+	regulator-min-microvolt = <3000000>;
+	regulator-max-microvolt = <3000000>;
+};
