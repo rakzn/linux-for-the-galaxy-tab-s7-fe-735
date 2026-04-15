@@ -7,12 +7,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Setup pmbootstrap
+      - name: Install pmbootstrap
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3-pip git
-          pip3 install --user pmbootstrap
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
+          sudo apt-get install -y python3 git wget
+          # Using the official install method
+          sudo wget https://gitlab.com/postmarketOS/pmbootstrap/-/raw/master/pmbootstrap.py -O /usr/local/bin/pmbootstrap
+          sudo chmod +x /usr/local/bin/pmbootstrap
 
       - name: Build
         run: |
@@ -24,6 +25,7 @@ jobs:
           n
           rakzn
           EOF
+          # This pulls your kernel code and builds the boot image
           pmbootstrap build linux-samsung-t735 --force
           pmbootstrap export
 
