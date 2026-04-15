@@ -10,14 +10,15 @@ jobs:
       - name: Install pmbootstrap
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 git wget
-          # Using the official install method
-          sudo wget https://gitlab.com/postmarketOS/pmbootstrap/-/raw/master/pmbootstrap.py -O /usr/local/bin/pmbootstrap
-          sudo chmod +x /usr/local/bin/pmbootstrap
+          sudo apt-get install -y python3 python3-pip git
+          # This installs it properly so all 'pmb' modules are found
+          pip3 install --user pmbootstrap
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Build
         run: |
-          pmbootstrap init <<EOF
+          # We use 'python3 -m pmb' to make sure it finds the modules
+          python3 -m pmb init <<EOF
           $HOME/.local/var/pmbootstrap
           edge
           samsung
@@ -25,9 +26,8 @@ jobs:
           n
           rakzn
           EOF
-          # This pulls your kernel code and builds the boot image
-          pmbootstrap build linux-samsung-t735 --force
-          pmbootstrap export
+          python3 -m pmb build linux-samsung-t735 --force
+          python3 -m pmb export
 
       - name: Upload boot.img
         uses: actions/upload-artifact@v4
