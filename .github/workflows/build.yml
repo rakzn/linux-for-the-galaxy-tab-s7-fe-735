@@ -19,7 +19,10 @@ jobs:
 
       - name: Initialize and Build
         run: |
-          # Standard interactive init bypass
+          # Clear the failed workspace from 1766.png
+          pmbootstrap zap -f
+          
+          # The answers MUST be in this exact order for version 3.10.1:
           pmbootstrap init <<EOF
           $HOME/.local/var/pmbootstrap
           edge
@@ -28,7 +31,8 @@ jobs:
           n
           rakzn
           EOF
-          # Build the kernel
+          
+          # Force the build to ensure your DTS changes are included
           pmbootstrap build linux-samsung-t735 --force
           pmbootstrap export
 
