@@ -12,7 +12,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3 git openssl
-          # Clone it directly as recommended by the pmOS wiki
           git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
           mkdir -p $HOME/.local/bin
           ln -s "$PWD/pmbootstrap/pmbootstrap.py" $HOME/.local/bin/pmbootstrap
@@ -20,9 +19,12 @@ jobs:
 
       - name: Initialize and Build
         run: |
-          # Use absolute paths to be safe
-          pmbootstrap init -d samsung -p t735 <<EOF
+          # Standard interactive init bypass
+          pmbootstrap init <<EOF
+          $HOME/.local/var/pmbootstrap
           edge
+          samsung
+          t735
           n
           rakzn
           EOF
