@@ -1,4 +1,4 @@
-name: T735 Kernel Build
+name: T735 Alpine Kernel Build
 on: [push, workflow_dispatch]
 
 jobs:
@@ -7,19 +7,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Force Install pmbootstrap
+      - name: Setup Alpine Tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y python3 python3-pip git
-          # Install with --user flag but also set PYTHONPATH
-          pip3 install --user pmbootstrap --break-system-packages || pip3 install --user pmbootstrap
+          sudo apt-get install -y python3 python3-venv git wget
+          # Create a virtual environment 'bubble' for pmbootstrap
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install pmbootstrap
+          # Make sure the 'pmb' command is accessible
+          echo "$(pwd)/venv/bin" >> $GITHUB_PATH
 
-      - name: Build
+      - name: Initialize pmbootstrap (Alpine)
         run: |
-          # Export both PATH and PYTHONPATH
-          export PATH="$HOME/.local/bin:$PATH"
-          export PYTHONPATH="$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH"
-          
+          source venv/bin/activate
           pmbootstrap init <<EOF
           $HOME/.local/var/pmbootstrap
           edge
@@ -28,11 +29,16 @@ jobs:
           n
           rakzn
           EOF
+
+      - name: Build T735 Kernel
+        run: |
+          source venv/bin/activate
+          # Force build to ensure DTS changes are included
           pmbootstrap build linux-samsung-t735 --force
           pmbootstrap export
 
       - name: Upload boot.img
         uses: actions/upload-artifact@v4
         with:
-          name: T735-Image
+          name: T735-Alpine-Image
           path: /tmp/postmarketOS-export/boot.img-samsung-t735
