@@ -11,13 +11,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip git
-          # This flag '--break-system-packages' is the secret sauce for Ubuntu 24.04
+          # Install with --user flag but also set PYTHONPATH
           pip3 install --user pmbootstrap --break-system-packages || pip3 install --user pmbootstrap
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Build
         run: |
+          # Export both PATH and PYTHONPATH
           export PATH="$HOME/.local/bin:$PATH"
+          export PYTHONPATH="$HOME/.local/lib/python3.11/site-packages:$PYTHONPATH"
+          
           pmbootstrap init <<EOF
           $HOME/.local/var/pmbootstrap
           edge
