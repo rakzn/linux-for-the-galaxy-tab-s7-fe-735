@@ -7,18 +7,18 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install pmbootstrap
+      - name: Force Install pmbootstrap
         run: |
           sudo apt-get update
           sudo apt-get install -y python3 python3-pip git
-          # This installs it properly so all 'pmb' modules are found
-          pip3 install --user pmbootstrap
+          # This flag '--break-system-packages' is the secret sauce for Ubuntu 24.04
+          pip3 install --user pmbootstrap --break-system-packages || pip3 install --user pmbootstrap
           echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Build
         run: |
-          # We use 'python3 -m pmb' to make sure it finds the modules
-          python3 -m pmb init <<EOF
+          export PATH="$HOME/.local/bin:$PATH"
+          pmbootstrap init <<EOF
           $HOME/.local/var/pmbootstrap
           edge
           samsung
@@ -26,8 +26,8 @@ jobs:
           n
           rakzn
           EOF
-          python3 -m pmb build linux-samsung-t735 --force
-          python3 -m pmb export
+          pmbootstrap build linux-samsung-t735 --force
+          pmbootstrap export
 
       - name: Upload boot.img
         uses: actions/upload-artifact@v4
