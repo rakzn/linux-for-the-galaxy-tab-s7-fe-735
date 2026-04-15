@@ -4,25 +4,29 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: alpine:edge
-      options: --privileged # This gives the robot permission to build the kernel
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Install Tools
+      - name: Setup pmbootstrap from Source
         run: |
-          apk add --no-interactive python3 py3-pip git openssl sudo bash
-          # Force install pmbootstrap ignoring the system block
-          pip install --break-system-packages pmbootstrap
+          sudo apt-get update
+          sudo apt-get install -y python3 git openssl
+          # Clone it directly as recommended by the pmOS wiki
+          git clone https://gitlab.postmarketos.org/postmarketOS/pmbootstrap.git
+          mkdir -p $HOME/.local/bin
+          ln -s "$PWD/pmbootstrap/pmbootstrap.py" $HOME/.local/bin/pmbootstrap
+          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
-      - name: Build T735 Kernel
+      - name: Initialize and Build
         run: |
+          # Use absolute paths to be safe
           pmbootstrap init -d samsung -p t735 <<EOF
+          edge
           n
           rakzn
           EOF
+          # Build the kernel
           pmbootstrap build linux-samsung-t735 --force
           pmbootstrap export
 
