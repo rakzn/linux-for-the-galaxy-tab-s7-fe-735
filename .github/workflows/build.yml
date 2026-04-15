@@ -4,17 +4,22 @@ on: [push, workflow_dispatch]
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: alpine:edge
+      options: --privileged # This gives the robot permission to build the kernel
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # This is the official "easy mode" tool from the pmOS team
-      - name: Setup pmbootstrap
-        uses: postmarketos/pmbootstrap-action@v5
+      - name: Install Tools
+        run: |
+          apk add --no-interactive python3 py3-pip git openssl sudo bash
+          # Force install pmbootstrap ignoring the system block
+          pip install --break-system-packages pmbootstrap
 
       - name: Build T735 Kernel
         run: |
           pmbootstrap init -d samsung -p t735 <<EOF
-          edge
           n
           rakzn
           EOF
